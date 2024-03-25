@@ -7,23 +7,27 @@ Session = sessionmaker(bind=engine)
 def add_tenant():
     session = Session()
     
-    # Get tenant name
+  
     name = input("Enter tenant name: ")
 
-    # Get property ID and validate
+    
     while True:
         property_id = input("Enter property ID: ")
-        property = session.query(Property).filter_by(id=property_id).first()
-        if property:
-            break  # Valid property ID, exit the loop
-        else:
-            print("Error: Property ID does not exist. Please enter a valid property ID.")
+        try:
+            property_id = int(property_id)  
+            property = session.query(Property).filter_by(id=property_id).first()
+            if property:
+               
+                tenant = Tenant(name=name, property_id=property_id)
+                session.add(tenant)
+                session.commit()
+                print("Tenant added successfully.")
+                break  
+            else:
+                print("Error: Property ID does not exist. Please enter a valid property ID.")
+        except ValueError:
+            print("Error: Property ID must be an integer.")
 
-    # Create tenant instance and add to session
-    tenant = Tenant(name=name, property_id=property_id)
-    session.add(tenant)
-    session.commit()
-    print("Tenant added successfully.")
     session.close()
 
 def display_available_tenants():

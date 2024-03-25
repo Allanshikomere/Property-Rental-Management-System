@@ -1,13 +1,30 @@
+import sqlite3
 from sqlalchemy.orm import sessionmaker
 from models import Property
 from db import engine
 
+
+conn = sqlite3.connect('property_rental_management.db')
+cursor = conn.cursor()
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS properties (
+        id INTEGER PRIMARY KEY,
+        address TEXT,
+        rent INTEGER,
+        tenant_id INTEGER
+    )
+''')
+conn.commit()
+conn.close()
+
+
 Session = sessionmaker(bind=engine)
+
 
 def add_property():
     session = Session()
     address = input("Enter property address: ")
-    rent = input("Enter property rent: ")
+    rent = int(input("Enter property rent: "))  
 
     property = Property(address=address, rent=rent)
     session.add(property)
@@ -41,3 +58,10 @@ def property_management_menu():
             break
         else:
             print("Invalid choice. Please enter a valid option.")
+
+
+def main():
+    property_management_menu()
+
+if __name__ == "__main__":
+    main()
